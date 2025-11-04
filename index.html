@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>D&D Campaign Toolkit</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>D&D Campaign Toolkit</h1>
+      <div class="sub">Create characters, weapons, spells, storylines, and generate dungeon maps. Data saves to your browser.</div>
+    </div>
+  </header>
+
+  <nav class="tabs wrap">
+    <button class="tab active" data-target="spells">Spells</button>
+    <button class="tab" data-target="weapons">Weapons</button>
+    <button class="tab" data-target="characters">Characters</button>
+    <button class="tab" data-target="story">Storylines</button>
+    <button class="tab" data-target="maps">Map Generator</button>
+    <span style="flex:1"></span>
+    <button class="tab" id="exportBtn" title="Export all data">Export</button>
+    <label for="importFile" class="btn ghost small" style="margin:0">Import JSON</label>
+    <input id="importFile" type="file" accept="application/json" style="display:none" />
+  </nav>
+
+  <main class="wrap">
+    <!-- Characters -->
+    <section id="characters">
+      <div class="grid">
+        <div class="panel">
+          <h3>New Character</h3>
+          <div class="stack">
+            <div class="row-3">
+              <div>
+                <label>Portrait</label>
+                <div class="stack">
+                  <img id="ch_image_preview" src="" alt="" style="max-width:100%; max-height:120px; display:none; border:1px solid var(--border); border-radius:6px;" />
+                  <input id="ch_image_url" type="hidden" />
+                  <input id="ch_image_file" type="file" accept=".png,.jpg,.jpeg,.webp" />
+                  <button class="btn small" id="ch_image_upload">Upload</button>
+                </div>
+              </div>
+              <div></div>
+              <div></div>
+            </div>
+            <div class="row-3">
+              <div>
+                <label>Name</label>
+                <input id="ch_name" type="text" placeholder="Elira Stormwind" />
+              </div>
+              <div>
+                <label>Race</label>
+                <input id="ch_race" type="text" placeholder="Elf" />
+              </div>
+              <div>
+                <label>Class</label>
+                <input id="ch_class" type="text" placeholder="Wizard" />
+              </div>
+            </div>
+            <div class="row-3">
+              <div>
+                <label>Level</label>
+                <input id="ch_level" type="number" min="1" max="20" value="1" />
+              </div>
+              <div>
+                <label>Background</label>
+                <input id="ch_bg" type="text" placeholder="Sage" />
+              </div>
+              <div>
+                <label>Alignment</label>
+                <input id="ch_align" type="text" placeholder="NG" />
+              </div>
+            </div>
+            <div>
+              <div class="flex" style="justify-content:space-between">
+                <label>Abilities</label>
+                <div class="actions">
+                  <button class="btn" id="rollStatsBtn">Roll 4d6 drop lowest</button>
+                  <button class="btn" id="clearStatsBtn">Clear</button>
+                </div>
+              </div>
+              <div class="row">
+                <div><input id="ch_str" type="number" min="1" max="30" placeholder="STR" /><div class="small muted" id="mod_str">mod +0</div></div>
+                <div><input id="ch_dex" type="number" min="1" max="30" placeholder="DEX" /><div class="small muted" id="mod_dex">mod +0</div></div>
+                <div><input id="ch_con" type="number" min="1" max="30" placeholder="CON" /><div class="small muted" id="mod_con">mod +0</div></div>
+                <div><input id="ch_int" type="number" min="1" max="30" placeholder="INT" /><div class="small muted" id="mod_int">mod +0</div></div>
+                <div><input id="ch_wis" type="number" min="1" max="30" placeholder="WIS" /><div class="small muted" id="mod_wis">mod +0</div></div>
+                <div><input id="ch_cha" type="number" min="1" max="30" placeholder="CHA" /><div class="small muted" id="mod_cha">mod +0</div></div>
+              </div>
+            </div>
+            <div class="row-3">
+              <div>
+                <label>HP (max)</label>
+                <input id="ch_hp" type="number" min="1" value="8" />
+              </div>
+              <div>
+                <label>AC</label>
+                <input id="ch_ac" type="number" min="0" value="10" />
+              </div>
+              <div>
+                <label>Speed</label>
+                <input id="ch_speed" type="number" min="0" value="30" />
+              </div>
+            </div>
+            <div>
+              <label>Features & Traits</label>
+              <textarea id="ch_traits" placeholder="Racial features, class features, feats..."></textarea>
+            </div>
+            <div>
+              <label>Notes</label>
+              <textarea id="ch_notes" placeholder="Anything else..."></textarea>
+            </div>
+            <div class="row-3">
+              <div>
+                <label>Weapons (hold Ctrl/Shift to select multiple)</label>
+                <select id="ch_weapons" multiple size="6" style="width:100%"></select>
+              </div>
+              <div>
+                <label>Spells (hold Ctrl/Shift to select multiple)</label>
+                <select id="ch_spells" multiple size="6" style="width:100%"></select>
+              </div>
+              <div></div>
+            </div>
+            <div class="actions">
+              <button class="btn primary" id="saveCharacterBtn">Save Character</button>
+              <button class="btn" id="resetCharacterBtn">Reset</button>
+              <button class="btn" id="viewCharacterCardBtn">View Card</button>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Characters</h3>
+          <table class="list" id="charactersTable">
+            <thead>
+              <tr><th>Name</th><th>Class</th><th>Level</th><th>AC</th><th>HP</th><th>Wpn</th><th>Spl</th><th>Card</th><th class="right">Actions</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Weapons -->
+    <section id="weapons">
+      <div class="grid">
+        <div class="panel">
+          <h3>New Weapon</h3>
+          <div class="stack">
+            <div class="row-3">
+              <div>
+                <label>Image</label>
+                <div class="stack">
+                  <img id="wp_image_preview" src="" alt="" style="max-width:100%; max-height:120px; display:none; border:1px solid var(--border); border-radius:6px;" />
+                  <input id="wp_image_url" type="hidden" />
+                  <input id="wp_image_file" type="file" accept=".png,.jpg,.jpeg,.webp" />
+                  <button class="btn small" id="wp_image_upload">Upload</button>
+                </div>
+              </div>
+              <div></div>
+              <div></div>
+            </div>
+            <div class="row-3">
+              <div><label>Name</label><input id="wp_name" type="text" placeholder="Longsword" /></div>
+              <div><label>Type</label><input id="wp_type" type="text" placeholder="Martial Melee" /></div>
+              <div><label>Damage</label><input id="wp_dmg" type="text" placeholder="1d8 slashing" /></div>
+            </div>
+            <div><label>Properties</label><input id="wp_props" type="text" placeholder="Versatile (1d10)" /></div>
+            <div class="actions">
+              <button class="btn primary" id="saveWeaponBtn">Add Weapon</button>
+              <button class="btn" id="viewWeaponCardBtn">View Card</button>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Weapons</h3>
+          <table class="list" id="weaponsTable">
+            <thead><tr><th>Name</th><th>Type</th><th>Damage</th><th>Props</th><th>Card</th><th class="right">Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Spells -->
+    <section id="spells" class="active">
+      <div class="grid">
+        <div class="panel">
+          <h3>New Spell</h3>
+          <div class="stack">
+            <div class="row-3">
+              <div>
+                <label>Image</label>
+                <div class="stack">
+                  <img id="sp_image_preview" src="" alt="" style="max-width:100%; max-height:120px; display:none; border:1px solid var(--border); border-radius:6px;" />
+                  <input id="sp_image_url" type="hidden" />
+                  <input id="sp_image_file" type="file" accept=".png,.jpg,.jpeg,.webp" />
+                  <button class="btn small" id="sp_image_upload">Upload</button>
+                </div>
+              </div>
+              <div></div>
+              <div></div>
+            </div>
+            <div class="row-3">
+              <div><label>Name</label><input id="sp_name" type="text" placeholder="Fire Bolt" /></div>
+              <div><label>Level</label><input id="sp_level" type="number" min="0" max="9" value="0" /></div>
+              <div><label>School</label><input id="sp_school" type="text" placeholder="Evocation" /></div>
+            </div>
+            <div class="row-3">
+              <div><label>Casting Time</label><input id="sp_cast" type="text" placeholder="1 action" /></div>
+              <div><label>Range</label><input id="sp_range" type="text" placeholder="120 feet" /></div>
+              <div><label>Duration</label><input id="sp_duration" type="text" placeholder="Instantaneous" /></div>
+            </div>
+            <div><label>Components</label><input id="sp_components" type="text" placeholder="V, S" /></div>
+            <div><label>Description</label><textarea id="sp_desc" placeholder="What the spell does..."></textarea></div>
+            <div class="actions">
+              <button class="btn primary" id="saveSpellBtn">Add Spell</button>
+              <button class="btn" id="viewSpellCardBtn">View Card</button>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Spells</h3>
+          <table class="list" id="spellsTable">
+            <thead><tr><th>Name</th><th>Lvl</th><th>School</th><th>Cast</th><th>Range</th><th>Duration</th><th>Card</th><th class="right">Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Storylines -->
+    <section id="story">
+      <div class="grid">
+        <div class="panel">
+          <h3>New Storyline</h3>
+          <div class="stack">
+            <div class="row-3">
+              <div><label>Title</label><input id="st_title" type="text" placeholder="Shadows of Althoria" /></div>
+              <div><label>Theme</label><input id="st_theme" type="text" placeholder="Mystery, political intrigue" /></div>
+              <div><label>Tier</label><select id="st_tier"><option>1-4</option><option>5-10</option><option>11-16</option><option>17-20</option></select></div>
+            </div>
+            <div><label>Synopsis</label><textarea id="st_synopsis" placeholder="High-level plot overview..."></textarea></div>
+            <div class="stack">
+              <label>Quests / Beats</label>
+              <div class="flex">
+                <input id="st_new_quest" type="text" placeholder="Recover the lost signet ring..." />
+                <button class="btn" id="st_add_quest">Add</button>
+              </div>
+              <div id="st_quests" class="stack"></div>
+            </div>
+            <div class="actions"><button class="btn primary" id="saveStoryBtn">Save Storyline</button></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Storylines</h3>
+          <table class="list" id="storiesTable">
+            <thead><tr><th>Title</th><th>Tier</th><th>Beats</th><th class="right">Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Map Generator -->
+    <section id="maps">
+      <div class="grid">
+        <div class="panel">
+          <h3>Map Options</h3>
+          <div class="row-3">
+            <div>
+              <label>Map Type</label>
+              <select id="m_type">
+                <option value="overworld" selected>Overworld</option>
+                <option value="dungeon">Dungeon</option>
+              </select>
+            </div>
+            <div>
+              <label>Seed</label>
+              <input id="m_seed" type="number" value="12345" />
+            </div>
+          </div>
+          <div class="row-3">
+            <div><label>Width (tiles)</label><input id="m_width" type="number" min="20" max="300" value="80" /></div>
+            <div><label>Height (tiles)</label><input id="m_height" type="number" min="20" max="300" value="60" /></div>
+          </div>
+          <div id="dungeonOpts">
+            <div class="row-3">
+              <div><label>Rooms</label><input id="m_rooms" type="number" min="3" max="200" value="20" /></div>
+              <div><label>Room min size</label><input id="m_rmin" type="number" min="3" max="20" value="4" /></div>
+              <div><label>Room max size</label><input id="m_rmax" type="number" min="4" max="30" value="10" /></div>
+            </div>
+            <div class="row-3">
+              <div><label>Corridor bend chance</label><input id="m_bend" type="number" min="0" max="100" value="35" /></div>
+            </div>
+          </div>
+
+          <div id="overworldOpts" style="display:none">
+            <div class="row-3">
+              <div><label>Water level (%)</label><input id="ow_water" type="number" min="0" max="100" value="45" /></div>
+              <div><label>Forest density (%)</label><input id="ow_forest" type="number" min="0" max="100" value="55" /></div>
+              <div><label>Mountain threshold (%)</label><input id="ow_mountain" type="number" min="0" max="100" value="72" /></div>
+            </div>
+            <div class="row-3">
+              <div><label>Castles</label><input id="ow_castles" type="number" min="0" max="50" value="5" /></div>
+              <div><label>Biome scale</label><input id="ow_scale" type="number" min="4" max="64" value="16" /></div>
+              <div><label>Octaves</label><input id="ow_octaves" type="number" min="1" max="6" value="4" /></div>
+            </div>
+          </div>
+
+          <!-- 3D Settings (per map type) -->
+          <div id="threeOpts">
+            <h3 class="small muted" style="margin:6px 0 2px 0">3D Settings</h3>
+            <div id="threeDungeonOpts">
+              <div class="row-3">
+                <div>
+                  <label>Wall height (units)</label>
+                  <input id="m_wall_height" type="number" min="0.5" max="6" step="0.1" value="1.5" />
+                </div>
+              </div>
+            </div>
+            <div id="threeOverworldOpts" style="display:none">
+              <div class="row-3">
+                <div>
+                  <label>Height scale (x)</label>
+                  <input id="ow_hscale" type="number" min="0.2" max="3" step="0.1" value="1.0" />
+                </div>
+              </div>
+              <div class="row-3">
+                <div>
+                  <label>Smoothing passes</label>
+                  <input id="ow_smooth_iters" type="number" min="0" max="10" value="2" />
+                </div>
+                <div>
+                  <label>Smoothing strength</label>
+                  <input id="ow_smooth_strength" type="number" min="0" max="1" step="0.05" value="0.5" />
+                </div>
+                <div>
+                  <label>Water height (Y)</label>
+                  <input id="ow_water_z" type="number" min="-2" max="2" step="0.05" value="-0.15" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" id="genMapBtn">Generate</button>
+            <button class="btn" id="clearMapBtn">Clear</button>
+            <button class="btn" id="downloadPngBtn">Download PNG</button>
+          </div>
+          <div class="small muted">Tip: Dungeon = rooms/corridors. Overworld = water, beaches, grasslands, forests, hills, mountains, castles.</div>
+        </div>
+        <div class="panel">
+          <h3>Preview</h3>
+          <div class="canvas-wrap">
+            <canvas id="mapCanvas" width="800" height="600"></canvas>
+          </div>
+          <div class="actions" style="margin-top:8px">
+            <button class="btn" id="open3DBtn">Open 3D Preview</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 3D Modal -->
+  <div id="threeModal" class="modal" style="display:none">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-dialog">
+      <div class="modal-sidebar">
+        <div class="modal-header">3D Tools</div>
+        <div class="sidebar-scroll">
+          <div id="toolsTabs" class="tabs" style="padding:8px; border-bottom:1px solid var(--border)">
+            <button class="tab active" data-target="sideAssets">Assets</button>
+            <button class="tab" data-target="sideTools">Tools</button>
+            <button class="tab" data-target="sideFoliage">Foliage</button>
+          </div>
+          <div id="sideTools" class="side-tab">
+            <div class="stack" style="padding:8px">
+              <button class="btn" id="placeModeBtn">Place: Off</button>
+              <div class="small muted">Tip: Click on terrain to place.</div>
+              <div class="hr"></div>
+              
+              <div class="small muted">Inspector</div>
+              <div class="stack">
+                <div class="row-3">
+                  <div><label class="small">Pos X</label><input id="tr_pos_x" type="number" step="0.1" /></div>
+                  <div><label class="small">Pos Y</label><input id="tr_pos_y" type="number" step="0.1" /></div>
+                  <div><label class="small">Pos Z</label><input id="tr_pos_z" type="number" step="0.1" /></div>
+                </div>
+                <div class="row-3">
+                  <div><label class="small">Rot X (deg)</label><input id="tr_rot_x" type="number" step="5" /></div>
+                  <div><label class="small">Rot Y (deg)</label><input id="tr_rot_y" type="number" step="5" /></div>
+                  <div><label class="small">Rot Z (deg)</label><input id="tr_rot_z" type="number" step="5" /></div>
+                </div>
+                <div class="row-3">
+                  <div><label class="small">Scale</label><input id="tr_scale" type="number" step="0.1" min="0.01" value="1" /></div>
+                  <div style="align-self:end" class="small muted">Hold Ctrl + drag to move</div>
+                  <div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Foliage tab -->
+          <div id="sideFoliage" class="side-tab">
+            <div class="stack" style="padding:8px">
+              <div class="small muted">Foliage Paint</div>
+              <div class="stack">
+                <label class="small"><input type="checkbox" id="paint_enable" /> Paint mode (2D map)</label>
+                <div class="row-3">
+                  <div><label class="small">Brush radius</label><input id="paint_radius" type="number" min="0.5" max="20" step="0.5" value="3" /></div>
+                  <div><label class="small">Density</label><input id="paint_density" type="number" min="1" max="100" step="1" value="8" /></div>
+                  <div><label class="small">Rand rot</label><input id="paint_rand_rot" type="checkbox" checked /></div>
+                </div>
+                <div class="row-3">
+                  <div><label class="small">Scale min</label><input id="paint_scale_min" type="number" min="0.1" max="5" step="0.1" value="0.8" /></div>
+                  <div><label class="small">Scale max</label><input id="paint_scale_max" type="number" min="0.1" max="5" step="0.1" value="1.2" /></div>
+                  <div><label class="small">Erase</label><input id="paint_erase" type="checkbox" /></div>
+                </div>
+                <!-- 2D painting is done in the main viewport now -->
+                <div class="actions">
+                  <button class="btn" id="paint_generate">Generate From Paint</button>
+                  <button class="btn" id="paint_clear">Clear Paint</button>
+                </div>
+                <div class="small muted">Pick an asset in the Assets tab, mark it as foliage, then click "Paint with".</div>
+              </div>
+            </div>
+          </div>
+          <div id="sideAssets" class="side-tab active">
+            <div class="stack" style="padding:8px">
+              <div class="small muted">Upload assets (.obj + .mtl + textures)</div>
+              <input type="file" id="meshUpload" multiple accept=".obj,.mtl,.png,.jpg,.jpeg,.webp" />
+              <div class="hr"></div>
+              <div class="small muted">Assets</div>
+              <div id="meshList" class="stack"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-content">
+        <button class="modal-close" title="Close" data-close-modal>&times;</button>
+        <div class="canvas-wrap" id="wrap3d" style="height:100%; position:relative;">
+          <canvas id="mapCanvas3d"></canvas>
+          <canvas id="paint2dMain" style="display:none; width:100%; height:100%; position:absolute; inset:0;"></canvas>
+          <canvas id="paintOverlay" class="paint-overlay" style="display:none; position:absolute; inset:0;"></canvas>
+        </div>
+      </div>
+      <div class="modal-rightbar">
+        <div class="modal-header">Placed Objects</div>
+        <div class="rightbar-scroll">
+          <div class="stack" style="padding:8px">
+            <div class="actions" style="margin-bottom:8px">
+              <button class="btn danger small" id="deleteFoliageBtn">Delete Foliage</button>
+            </div>
+            <div id="placedList" class="stack"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Modal -->
+  <div id="cardModal" class="modal" style="display:none">
+    <div class="modal-backdrop" data-close-card></div>
+    <div class="modal-content" style="position:relative; width:min(720px, 92vw); margin: 5vh auto; background:#0b0e16; border:1px solid var(--border); border-radius:12px; padding:16px;">
+      <button class="modal-close" id="closeCardBtn" title="Close">×</button>
+      <div id="cardContent"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js" defer></script>
+  <script src="js/app.js" defer></script>
+</body>
+</html>
